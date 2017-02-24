@@ -29,10 +29,10 @@
         //TODO: Throw
     }
     
-    if ([connection changeState:connected toState:reconnecting]) {
+    if ([connection changeState:ConnectionStateConnected toState:ConnectionStateReconnecting]) {
         [connection willReconnect];
     }
-    return (connection.state == reconnecting);
+    return (connection.state == ConnectionStateReconnecting);
 }
 
 @end

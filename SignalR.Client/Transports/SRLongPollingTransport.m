@@ -218,14 +218,14 @@
     if ([canReconnect boolValue]) {
         canReconnect = @(NO);
         // Mark the connection as connected
-        if ([connection changeState:reconnecting toState:connected]) {
+        if ([connection changeState:ConnectionStateReconnecting toState:ConnectionStateConnected]) {
             [connection didReconnect];
         }
     }
 }
 
 - (BOOL)isConnectionReconnecting:(id<SRConnectionInterface>)connection {
-    return connection.state == reconnecting;
+    return connection.state == ConnectionStateReconnecting;
 }
 
 @end

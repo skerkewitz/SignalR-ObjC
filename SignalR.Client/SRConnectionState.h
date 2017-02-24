@@ -22,9 +22,16 @@
 
 #import <Foundation/Foundation.h>
 
-typedef enum {
-    connecting,
-    connected,
-    reconnecting,
-    disconnected
-} connectionState;
+//typedef enum {
+//    connecting,
+//    connected,
+//    reconnecting,
+//    disconnected
+//} connectionState;
+
+typedef NS_ENUM(NSUInteger, ConnectionState) {
+    ConnectionStateConnecting,
+    ConnectionStateConnected,
+    ConnectionStateReconnecting,
+    ConnectionStateDisconnected
+};

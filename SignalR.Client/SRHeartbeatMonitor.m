@@ -60,7 +60,7 @@
 }
 
 - (void)beat:(NSInteger)timeElapsed {
-    if (_connection.state == connected) {
+    if (_connection.state == ConnectionStateConnected) {
         if (timeElapsed >= [[[_connection keepAliveData] timeout] integerValue]) {
             if (!self.timedOut) {
                 // Connection has been lost

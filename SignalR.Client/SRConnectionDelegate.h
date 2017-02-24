@@ -38,7 +38,7 @@
 
 - (void)SRConnection:(id <SRConnectionInterface>)connection didReceiveError:(NSError *)error;
 
-- (void)SRConnection:(id <SRConnectionInterface>)connection didChangeState:(connectionState)oldState newState:(connectionState)newState;
+- (void)SRConnection:(id <SRConnectionInterface>)connection didChangeState:(ConnectionState)oldState newState:(ConnectionState)newState;
 
 - (void)SRConnectionDidSlow:(id <SRConnectionInterface>)connection;
 

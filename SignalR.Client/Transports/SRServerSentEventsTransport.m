@@ -154,7 +154,7 @@ typedef void (^SRCompletionHandler)(id response, NSError *error);
         SRLogSSEInfo(@"serverSentEvents did open eventSource");
         
         // This will noop if we're not in the reconnecting state
-        if([strongConnection changeState:reconnecting toState:connected]) {
+        if([strongConnection changeState:ConnectionStateReconnecting toState:ConnectionStateConnected]) {
             // Raise the reconnect event if the connection comes back up
             [strongConnection didReconnect];
         }
@@ -271,7 +271,7 @@ typedef void (^SRCompletionHandler)(id response, NSError *error);
         __strong __typeof(&*weakSelf)strongSelf = weakSelf;
         __strong __typeof(&*weakConnection)strongConnection = weakConnection;
         
-        if (connection.state != disconnected && [SRConnection ensureReconnecting:strongConnection]) {
+        if (connection.state != ConnectionStateDisconnected && [SRConnection ensureReconnecting:strongConnection]) {
             SRLogSSEWarn(@"reconnecting");
             [strongSelf.serverSentEventsOperationQueue cancelAllOperations];
             //now that all the current connections are tearing down, we have the queue to ourselves
@@ -282,7 +282,7 @@ typedef void (^SRCompletionHandler)(id response, NSError *error);
 }
 
 - (BOOL)isConnectionReconnecting:(id<SRConnectionInterface>)connection {
-    return connection.state == reconnecting;
+    return connection.state == ConnectionStateReconnecting;
 }
 
 @end

@@ -38,7 +38,7 @@
 @property (strong, nonatomic, readwrite) NSNumber * disconnectTimeout;
 @property (strong, nonatomic, readwrite) NSBlockOperation * disconnectTimeoutOperation;
 
-@property (assign, nonatomic, readwrite) connectionState state;
+@property (assign, nonatomic, readwrite) ConnectionState state;
 @property (strong, nonatomic, readwrite) NSString *url;
 @property (strong, nonatomic, readwrite) NSMutableDictionary *items;
 @property (strong, nonatomic, readwrite) NSDictionary *queryString;
@@ -99,7 +99,7 @@
         //_connectingMessageBuffer = new ConnectingMessageBuffer(this, OnMessageReceived);
         _items = [NSMutableDictionary dictionary];
         _headers = [NSMutableDictionary dictionary];
-        _state = disconnected;
+        _state = ConnectionStateDisconnected;
         _defaultAbortTimeout = @30;
         _transportConnectTimeout = @0;
         _protocol = [[SRVersion alloc] initWithMajor:1 minor:3];
@@ -116,7 +116,7 @@
 }
 
 - (void)start:(id <SRClientTransportInterface>)transport {
-    if (![self changeState:disconnected toState:connecting]) {
+    if (![self changeState:ConnectionStateDisconnected toState:ConnectionStateConnecting]) {
         return;
     }
     
@@ -153,7 +153,7 @@
         } else {
             SRLogConnectionError(@"negotiation failed %@", error);
             [strongSelf didReceiveError:error];
-            [strongSelf stopButDoNotCallServer];
+            [strongSelf didClose];
         }
     }];
 }
@@ -166,7 +166,7 @@
         __strong __typeof(&*weakSelf)strongSelf = weakSelf;
         if (!error) {
             SRLogConnectionInfo(@"start transport was successful");
-            [strongSelf changeState:connecting toState:connected];
+            [strongSelf changeState:ConnectionStateConnecting toState:ConnectionStateConnected];
             
             if (_keepAliveData != nil && [_transport supportsKeepAlive]) {
                 SRLogConnectionDebug(@"connection starting keepalive monitor");
@@ -182,12 +182,12 @@
         } else {
             SRLogConnectionError(@"start transport failed %@",error);
             [strongSelf didReceiveError:error];
-            [strongSelf stopButDoNotCallServer];
+            [strongSelf didClose];
         }
     }];
 }
 
-- (BOOL)changeState:(connectionState)oldState toState:(connectionState)newState {
+- (BOOL)changeState:(ConnectionState)oldState toState:(ConnectionState)newState {
     @synchronized(self) {
         // If we're in the expected old state then change state and return true
         if (self.state == oldState) {
@@ -235,7 +235,7 @@
 //timeout <= 0 does not call server (immediate timeout)
 - (void)stop: (NSNumber *) timeout {
     // Do nothing if the connection is offline
-    if (self.state != disconnected) {
+    if (self.state != ConnectionStateDisconnected) {
         
         SRLogConnectionDebug(@"connection will stop monitoring keepalive");
         [_monitor stop];
@@ -250,9 +250,9 @@
 }
 
 - (void)disconnect {
-    if (self.state != disconnected) {
+    if (self.state != ConnectionStateDisconnected) {
         
-        _state = disconnected;
+        _state = ConnectionStateDisconnected;
         
         [_monitor stop];
         _monitor = nil;
@@ -275,7 +275,7 @@
 }
 
 - (void)send:(id)object completionHandler:(void (^)(id response, NSError *error))block {
-    if (self.state == disconnected) {
+    if (self.state == ConnectionStateDisconnected) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
         userInfo[NSLocalizedFailureReasonErrorKey] = NSInternalInconsistencyException;
         userInfo[NSLocalizedDescriptionKey] = [NSString stringWithFormat:NSLocalizedString(@"Start must be called before data can be sent",@"NSInternalInconsistencyException")];
@@ -289,7 +289,7 @@
         return;
     }
     
-    if (self.state == connecting) {
+    if (self.state == ConnectionStateConnecting) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
         userInfo[NSLocalizedFailureReasonErrorKey] = NSInternalInconsistencyException;
         userInfo[NSLocalizedDescriptionKey] = [NSString stringWithFormat:NSLocalizedString(@"The connection has not been established",@"NSInternalInconsistencyException")];

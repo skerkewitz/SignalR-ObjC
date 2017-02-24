@@ -40,6 +40,8 @@
  */
 - (SRSubscription *)on:(NSString *)eventName perform:(NSObject *)object selector:(SEL)selector;
 
+- (SRSubscription *)on:(NSString *)eventName handler:(void (^)(NSArray *args))block;
+
 
 ///-------------------------------
 /// @name Publish

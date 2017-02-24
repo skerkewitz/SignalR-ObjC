@@ -178,7 +178,7 @@ typedef void (^SRWebSocketStartBlock)(id response, NSError *error);
     SRLogWSInfo(@"websocket did open");
     
     // This will noop if we're not in the reconnecting state
-    if ([[_connectionInfo connection] changeState:reconnecting toState:connected]) {
+    if ([[_connectionInfo connection] changeState:ConnectionStateReconnecting toState:ConnectionStateConnected]) {
         [[_connectionInfo connection] didReconnect];
     }
 }
@@ -222,7 +222,7 @@ typedef void (^SRWebSocketStartBlock)(id response, NSError *error);
         SRWebSocketStartBlock callback = [self.startBlock copy];
         self.startBlock = nil;
         callback(nil,error);
-    } else if ([[_connectionInfo connection] state] == reconnecting) {
+    } else if ([[_connectionInfo connection] state] == ConnectionStateReconnecting) {
         SRLogWSWarn(@"transport already reconnecting");
     }else if (!self.startedAbort) {
         SRLogWSWarn(@"will reconnect from errors: %@", error);

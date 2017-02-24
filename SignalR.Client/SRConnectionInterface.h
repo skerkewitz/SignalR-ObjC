@@ -43,7 +43,7 @@
 @property (strong, nonatomic, readwrite) NSString *connectionToken;
 @property (strong, nonatomic, readonly) NSString *url;
 @property (strong, nonatomic, readonly) NSDictionary *queryString;
-@property (assign, nonatomic, readonly) connectionState state;
+@property (assign, nonatomic, readonly) ConnectionState state;
 @property (strong, nonatomic, readonly) id<SRClientTransportInterface> transport;
 @property (strong, nonatomic, readwrite) NSURLCredential *credentials;
 @property (strong, nonatomic, readwrite) NSMutableDictionary *headers;
@@ -58,7 +58,7 @@
 /// @name Connection Management
 ///-------------------------------
 
-- (BOOL)changeState:(connectionState)oldState toState:(connectionState)newState;
+- (BOOL)changeState:(ConnectionState)oldState toState:(ConnectionState)newState;
 - (void)stop;
 - (void)disconnect;
 

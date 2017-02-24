@@ -36,7 +36,7 @@ typedef void (^SRConnectionErrorBlock)(NSError *);
 typedef void (^SRConnectionClosedBlock)();
 typedef void (^SRConnectionReconnectingBlock)();
 typedef void (^SRConnectionReconnectedBlock)();
-typedef void (^SRConnectionStateChangedBlock)(connectionState);
+typedef void (^SRConnectionStateChangedBlock)(ConnectionState);
 typedef void (^SRConnectionConnectionSlowBlock)();
 
 @interface SRConnection : NSObject <SRConnectionInterface>

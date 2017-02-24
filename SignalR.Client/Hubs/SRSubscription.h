@@ -41,4 +41,6 @@
  */
 @property (assign, nonatomic, readwrite) SEL selector;
 
+@property (copy, nonatomic, readwrite) void (^handler)(NSArray *args);
+
 @end

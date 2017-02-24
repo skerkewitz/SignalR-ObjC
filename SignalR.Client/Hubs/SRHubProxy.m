@@ -72,11 +72,35 @@
         subscription = [[SRSubscription alloc] init];
         subscription.object = object;
         subscription.selector = selector;
+        subscription.handler = nil;
         _subscriptions[eventName] = subscription;
     }
     
     return subscription;
 }
+
+- (SRSubscription *)on:(NSString *)eventName handler:(void (^)(NSArray *args))block {
+
+    if(eventName == nil || [eventName isEqualToString:@""]) {
+        [NSException raise:NSInvalidArgumentException format:NSLocalizedString(@"Argument eventName is null",@"NSInvalidArgumentException")];
+    }
+
+    if (block == nil) {
+        //TODO: Throw
+    }
+
+    SRSubscription *subscription = _subscriptions[eventName];
+    if(subscription == nil) {
+        subscription = [[SRSubscription alloc] init];
+        subscription.object = nil;
+        subscription.selector = nil;
+        subscription.handler = block;
+        _subscriptions[eventName] = subscription;
+    }
+
+    return subscription;
+}
+
 
 - (void)invokeEvent:(NSString *)eventName withArgs:(NSArray *)args {
     SRSubscription *eventObj = _subscriptions[eventName];
@@ -97,6 +121,8 @@
             [invocation setArgument:&argument atIndex:arguementIndex];
         }
         [invocation invoke];
+    } else if (eventObj.handler != nil) {
+        eventObj.handler(args);
     }
 }
 
